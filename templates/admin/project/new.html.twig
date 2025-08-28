@@ -1,0 +1,137 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau Projet{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Créer un nouveau projet</h1>
+
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'project-form'}}) }}
+    
+    <div class="row mb-3">
+        <div class="col-md-6">
+            {{ form_label(form.name, 'Nom du projet') }}
+            {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.name) }}
+        </div>
+        <div class="col-md-6">
+            {{ form_label(form.status, 'Statut') }}
+            {{ form_widget(form.status, {'attr': {'class': 'form-select'}}) }}
+            {{ form_errors(form.status) }}
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            {{ form_label(form.user, 'Client') }}
+            {{ form_widget(form.user, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.user) }}
+        </div>
+    </div>
+
+    <h3 class="mb-3">Valeurs du projet</h3>
+    
+    <div id="project-values" 
+         data-prototype="{{ form_widget(form.projectValues.vars.prototype)|e('html_attr') }}"
+         data-index="{{ form.projectValues|length }}">
+         
+        {% for value in form.projectValues %}
+            <div class="value-item mb-3 p-3 border rounded">
+                <div class="row">
+                    <div class="col-md-5">
+                        {{ form_label(value.projectAttribute, 'Attribut') }}
+                        {{ form_widget(value.projectAttribute, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(value.projectAttribute) }}
+                    </div>
+                    <div class="col-md-5">
+                        {{ form_label(value.value, 'Valeur') }}
+                        {{ form_widget(value.value, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(value.value) }}
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-danger remove-value">Supprimer</button>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <button type="button" id="add-value" class="btn btn-success mb-4">
+        <i class="fas fa-plus"></i> Ajouter une valeur
+    </button>
+
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Créer le projet
+        </button>
+        <a href="{{ path('admin_projects') }}" class="btn btn-secondary">
+            <i class="fas fa-times"></i> Annuler
+        </a>
+    </div>
+
+    {{ form_end(form) }}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addButton = document.getElementById('add-value');
+    const container = document.getElementById('project-values');
+    const prototype = container.dataset.prototype;
+    let index = parseInt(container.dataset.index);
+
+    // Ajouter une nouvelle valeur
+    addButton.addEventListener('click', function() {
+        const newForm = prototype.replace(/__name__/g, index);
+        const div = document.createElement('div');
+        div.className = 'value-item mb-3 p-3 border rounded';
+        div.innerHTML = newForm;
+        
+        // Ajouter le bouton supprimer
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'btn btn-danger remove-value';
+        deleteBtn.textContent = 'Supprimer';
+        deleteBtn.onclick = function() {
+            div.remove();
+        };
+        
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'col-md-2 d-flex align-items-end';
+        buttonContainer.appendChild(deleteBtn);
+        
+        const row = div.querySelector('.row') || document.createElement('div');
+        row.className = 'row';
+        row.appendChild(buttonContainer);
+        
+        container.appendChild(div);
+        index++;
+    });
+
+    // Supprimer une valeur existante
+    container.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-value')) {
+            e.target.closest('.value-item').remove();
+        }
+    });
+});
+</script>
+
+<style>
+.value-item {
+    background-color: #f8f9fa;
+    transition: background-color 0.2s;
+}
+
+.value-item:hover {
+    background-color: #e9ecef;
+}
+
+.remove-value {
+    margin-top: 1.5rem;
+}
+
+.project-form .form-group {
+    margin-bottom: 1rem;
+}
+</style>
+{% endblock %}

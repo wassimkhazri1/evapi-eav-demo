@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h1 class="h4 mb-0">Créer un compte</h1>
+                    </div>
+                    <div class="card-body">
+                        {{ form_start(registrationForm) }}
+                    {#            {{ form_row(registrationForm.email) }} #}
+                            
+                            <div class="form-group password-toggle-container">
+                                {{ form_row(registrationForm.plainPassword, {
+                                    'attr': {
+                                        'class': 'form-control password-input',
+                                        'data-toggle': 'password'
+                                    }
+                                }) }}
+                                <button type="button" class="btn btn-outline-secondary password-toggle">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                            </div>
+                            
+                      {#      {{ form_row(registrationForm.role) }} #}
+                            
+                            <button type="submit" class="btn btn-primary ">S'inscrire</button>
+                        {{ form_end(registrationForm) }}
+                        <div class="mt-3 text-center">
+                            <a href="{{ path('app_login') }}">Déjà un compte ? Se connecter</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.password-toggle').forEach(button => {
+            button.addEventListener('click', function() {
+                const container = this.closest('.password-toggle-container');
+                const passwordInput = container.querySelector('.password-input');
+                const icon = this.querySelector('i');
+                
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.classList.replace('fa-eye', 'fa-eye-slash');
+                    this.title = 'Masquer le mot de passe';
+                } else {
+                    passwordInput.type = 'password';
+                    icon.classList.replace('fa-eye-slash', 'fa-eye');
+                    this.title = 'Afficher le mot de passe';
+                }
+            });
+        });
+    });
+    </script>
+{% endblock %}

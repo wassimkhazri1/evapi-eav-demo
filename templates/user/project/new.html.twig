@@ -1,0 +1,240 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau Projet{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Créer un nouveau projet</h1>
+
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'project-form'}}) }}
+    
+    <div class="row mb-3">
+        <div class="col-md-6">
+            {{ form_label(form.name, 'Nom du projet') }}
+            {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.name) }}
+        </div>
+    </div>
+
+    <h3 class="mb-3">Valeurs du projet</h3>
+    
+    <div id="project-values" 
+         data-prototype="{{ form_widget(form.projectValues.vars.prototype)|e('html_attr') }}"
+         data-index="{{ form.projectValues|length }}">
+         
+        {% for value in form.projectValues %}
+            <div class="value-item mb-3 p-3 border rounded">
+                <div class="row">
+                    <div class="col-md-5">
+                        {{ form_label(value.projectAttribute, 'Attribut') }}
+                        <div class="input-group">
+                            {{ form_widget(value.projectAttribute, {'attr': {'class': 'form-control attribute-select'}}) }}
+                            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#attributeModal">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        {{ form_errors(value.projectAttribute) }}
+                    </div>
+                    <div class="col-md-5">
+                        {{ form_label(value.value, 'Valeur') }}
+                        {{ form_widget(value.value, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(value.value) }}
+                    </div>
+                                        <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-danger remove-value">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-danger remove-value">Supprimer</button>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <button type="button" id="add-value" class="btn btn-success mb-4">
+        <i class="fas fa-plus"></i> Ajouter une valeur
+    </button>
+
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save"></i> Créer le projet
+        </button>
+        <a href="{{ path('user_projects') }}" class="btn btn-secondary">
+            <i class="fas fa-times"></i> Annuler
+        </a>
+    </div>
+
+    {{ form_end(form) }}
+</div>
+
+<!-- Modal pour ajouter un nouvel attribut -->
+<div class="modal fade" id="attributeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ajouter un nouvel attribut</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="attributeForm">
+                    <div class="mb-3">
+                        <label for="newAttributeName" class="form-label">Nom de l'attribut</label>
+                        <input type="text" class="form-control" id="newAttributeName" name="newAttributeName" required>
+                        <div class="invalid-feedback">Veuillez entrer un nom</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newAttributeType" class="form-label">Type de l'attribut</label>
+                        <select class="form-select" id="newAttributeType" name="newAttributeType" required>
+                            <option value="">Sélectionnez un type</option>
+                            <option value="string">Texte (string)</option>
+                            <option value="number">Nombre (number)</option>
+                            <option value="boolean">Booléen (boolean)</option>
+                        </select>
+                        <div class="invalid-feedback">Veuillez sélectionner un type</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" id="saveNewAttribute">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addButton = document.getElementById('add-value');
+    const container = document.getElementById('project-values');
+    const prototype = container.dataset.prototype;
+    let index = parseInt(container.dataset.index);
+
+    // Ajouter une nouvelle valeur
+    addButton.addEventListener('click', function() {
+        const newForm = prototype.replace(/__name__/g, index);
+        const div = document.createElement('div');
+        div.className = 'value-item mb-3 p-3 border rounded';
+        div.innerHTML = newForm;
+        
+        // Ajouter le bouton supprimer
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'btn btn-danger remove-value';
+        deleteBtn.textContent = 'Supprimer';
+        deleteBtn.onclick = function() {
+            div.remove();
+        };
+        
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'col-md-2 d-flex align-items-end';
+        buttonContainer.appendChild(deleteBtn);
+        
+        const row = div.querySelector('.row') || document.createElement('div');
+        row.className = 'row';
+        row.appendChild(buttonContainer);
+        
+        // Ajouter le bouton d'ajout d'attribut au select existant
+        const selectElement = div.querySelector('select');
+        if (selectElement) {
+            selectElement.classList.add('attribute-select');
+            const inputGroup = document.createElement('div');
+            inputGroup.className = 'input-group';
+            
+            selectElement.parentNode.insertBefore(inputGroup, selectElement);
+            inputGroup.appendChild(selectElement);
+            
+            const addAttributeBtn = document.createElement('button');
+            addAttributeBtn.type = 'button';
+            addAttributeBtn.className = 'btn btn-outline-secondary';
+            addAttributeBtn.setAttribute('data-bs-toggle', 'modal');
+            addAttributeBtn.setAttribute('data-bs-target', '#attributeModal');
+            addAttributeBtn.innerHTML = '<i class="fas fa-plus"></i>';
+            inputGroup.appendChild(addAttributeBtn);
+        }
+        
+        container.appendChild(div);
+        index++;
+    });
+
+    // Supprimer une valeur existante
+    container.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-value')) {
+            e.target.closest('.value-item').remove();
+        }
+    });
+
+    // Gestion de l'ajout d'un nouvel attribut via AJAX
+    document.getElementById('saveNewAttribute').addEventListener('click', function() {
+        const name = document.getElementById('newAttributeName').value.trim();
+        const type = document.getElementById('newAttributeType').value;
+        
+        if (!name || !type) {
+            alert('Veuillez remplir tous les champs');
+            return;
+        }
+        
+        // Envoi de la requête AJAX
+        fetch('{{ path("attribute_ajax_create") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name: name, type: type })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Ajouter la nouvelle option à tous les selects
+                const selects = document.querySelectorAll('.attribute-select');
+                selects.forEach(select => {
+                    const option = document.createElement('option');
+                    option.value = data.attribute.id;
+                    option.textContent = data.attribute.name + ' (' + data.attribute.type + ')';
+                    select.appendChild(option);
+                });
+                
+                // Fermer la modal et réinitialiser le formulaire
+                const modal = bootstrap.Modal.getInstance(document.getElementById('attributeModal'));
+                modal.hide();
+                document.getElementById('attributeForm').reset();
+                
+                // Afficher un message de succès
+                alert('Attribut ajouté avec succès!');
+            } else {
+                alert('Erreur: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            alert('Une erreur s\'est produite lors de l\'ajout de l\'attribut');
+        });
+    });
+});
+</script>
+
+<style>
+.value-item {
+    background-color: #f8f9fa;
+    transition: background-color 0.2s;
+}
+
+.value-item:hover {
+    background-color: #e9ecef;
+}
+
+.remove-value {
+    margin-top: 1.5rem;
+}
+
+.project-form .form-group {
+    margin-bottom: 1rem;
+}
+
+.input-group .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+</style>
+{% endblock %}

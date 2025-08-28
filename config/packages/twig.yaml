@@ -1,0 +1,26 @@
+# config/packages/twig.yaml
+twig:
+    # Pattern des fichiers Twig
+    file_name_pattern: "*.twig"
+
+    # Thèmes de formulaire (l'ordre est important)
+    form_themes:
+        - "registration/register.html.twig"
+        - "bootstrap_5_layout.html.twig"
+
+    # Chemin par défaut des templates
+    default_path: "%kernel.project_dir%/templates"
+
+    # Mode debug
+    debug: "%kernel.debug%"
+
+    # Variables strictes (en mode debug seulement)
+    strict_variables: "%kernel.debug%"
+
+    # Désactiver le exception_controller pour utiliser le système de Symfony
+    exception_controller: null
+
+# Configuration spécifique pour l'environnement de test
+when@test:
+    twig:
+        strict_variables: true

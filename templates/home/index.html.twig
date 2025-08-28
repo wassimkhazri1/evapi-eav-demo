@@ -1,0 +1,807 @@
+{# templates/home/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}EVAPI | Agence de communication à Montgeron{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://unpkg.com/swiper@9/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset et styles de base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Section Styles */
+        .review-section {
+            padding: 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Header Styles */
+        .review-header {
+            max-width: 800px;
+            margin: 0 auto 50px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .review-title {
+            font-size: 2.75rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+        
+        .review-subtitle {
+            font-size: 1.3rem;
+            color: #7f8c8d;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+        
+        /* Layout principal côte à côte */
+        .review-content-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            align-items: flex-start;
+        }
+        
+        .rating-sidebar {
+            flex: 1;
+            min-width: 250px;
+            max-width: 280px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            text-align: center;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .carousel-main {
+            flex: 3;
+            min-width: 300px;
+        }
+        
+        /* Rating Summary Styles - Version compacte */
+        .rating-summary {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .google-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+        
+        .google-link:hover {
+            transform: translateY(-3px);
+        }
+        
+        .google-logo {
+            width: 35px;
+            height: 35px;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .google-link:hover .google-logo {
+            transform: scale(1.1);
+        }
+        
+        .rating-score {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #2c3e50;
+            margin: 5px 0;
+            position: relative;
+        }
+        
+        .stars-container {
+            color: #f1c40f;
+            font-size: 1.4rem;
+            margin: 5px 0;
+            letter-spacing: 1px;
+        }
+        
+        .review-count {
+            color: #7f8c8d;
+            margin: 5px 0 10px;
+            font-size: 0.95rem;
+        }
+        
+        .btn-review {
+            background: linear-gradient(135deg, #4285F4 0%, #3566C4 100%);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 12px rgba(66, 133, 244, 0.25);
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .btn-review:hover {
+            background: linear-gradient(135deg, #3566C4 0%, #2A56B0 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(66, 133, 244, 0.35);
+        }
+        
+        /* Statistiques supplémentaires - Version compacte */
+        .rating-stats {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+        }
+        
+        .stat-value {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .stat-bar {
+            height: 5px;
+            background: #eee;
+            border-radius: 3px;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+        
+        .stat-fill {
+            height: 100%;
+            background: #f1c40f;
+            border-radius: 3px;
+        }
+        
+        /* Carousel Styles */
+        .review-carousel {
+            width: 100%;
+            padding: 10px 0 30px;
+            position: relative;
+        }
+        
+        .swiper {
+            padding: 10px 5px 40px;
+        }
+        
+        .review-item {
+            width: 100%;
+            max-width: 380px;
+            padding: 30px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .review-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4285F4, #34A853, #FBBC05, #EA4335);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .review-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+        
+        .review-item:hover::before {
+            opacity: 1;
+        }
+        
+        .review-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 18px;
+            gap: 15px;
+        }
+        
+        .reviewer-name {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
+            line-height: 1.3;
+        }
+        
+        .item-stars {
+            color: #f1c40f;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            letter-spacing: 1px;
+        }
+        
+        .review-logo {
+            width: 22px;
+            height: 22px;
+            margin: 12px 0;
+            opacity: 0.8;
+        }
+        
+        .review-content {
+            flex-grow: 1;
+            color: #34495e;
+            line-height: 1.7;
+            position: relative;
+        }
+        
+        .review-text {
+            margin-bottom: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .review-text.expanded {
+            -webkit-line-clamp: unset;
+        }
+        
+        .read-more {
+            color: #4285F4;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 10px;
+            transition: color 0.2s ease;
+        }
+        
+        .read-more:hover {
+            color: #2A56B0;
+            text-decoration: underline;
+        }
+        
+        /* Navigation Styles */
+        .carousel-nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .nav-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            outline: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .nav-btn:hover {
+            background: #4285F4;
+            color: white;
+            transform: scale(1.1);
+            border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 6px 15px rgba(66, 133, 244, 0.3);
+        }
+        
+        /* Swiper Pagination */
+        .swiper-pagination {
+            position: relative;
+            bottom: 0;
+            margin-top: 20px;
+        }
+        
+        .swiper-pagination-bullet {
+            width: 10px;
+            height: 10px;
+            background: #ccc;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+        
+        .swiper-pagination-bullet-active {
+            background: #4285F4;
+            opacity: 1;
+            transform: scale(1.2);
+        }
+        
+        /* Loading Animation */
+        .review-item {
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 991px) {
+            .review-content-wrapper {
+                flex-direction: column;
+            }
+            
+            .rating-sidebar {
+                position: static;
+                width: 100%;
+                max-width: 100%;
+                margin-bottom: 30px;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-around;
+                align-items: center;
+                gap: 20px;
+            }
+            
+            .rating-summary {
+                margin-bottom: 0;
+                flex: 1;
+                min-width: 200px;
+            }
+            
+            .rating-stats {
+                margin-top: 0;
+                padding-top: 0;
+                border-top: none;
+                border-left: 1px solid #eee;
+                padding-left: 20px;
+                flex: 2;
+                min-width: 200px;
+            }
+            
+            .review-title {
+                font-size: 2.5rem;
+            }
+            
+            .review-subtitle {
+                font-size: 1.2rem;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .review-section {
+                padding: 60px 0;
+            }
+            
+            .rating-sidebar {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .rating-stats {
+                border-left: none;
+                border-top: 1px solid #eee;
+                padding-left: 0;
+                padding-top: 20px;
+                width: 100%;
+            }
+            
+            .review-title {
+                font-size: 2.25rem;
+            }
+            
+            .review-subtitle {
+                font-size: 1.15rem;
+            }
+            
+            .rating-score {
+                font-size: 2.2rem;
+            }
+            
+            .stars-container {
+                font-size: 1.6rem;
+            }
+            
+            .review-item {
+                padding: 25px;
+            }
+            
+            .reviewer-name {
+                font-size: 1.1rem;
+            }
+            
+            .nav-btn {
+                width: 45px;
+                height: 45px;
+            }
+        }
+        
+        @media (max-width: 575px) {
+            .review-title {
+                font-size: 2rem;
+            }
+            
+            .review-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .review-header {
+                margin-bottom: 40px;
+            }
+            
+            .rating-sidebar {
+                padding: 20px 15px;
+            }
+            
+            .btn-review {
+                padding: 10px 16px;
+                font-size: 0.85rem;
+            }
+            
+            .rating-summary, .rating-stats {
+                min-width: 100%;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<section class="review-section">
+    <div class="container">
+        <div class="review-header">
+            <h1 class="review-title">Les avis de nos clients</h1>
+            <p class="review-subtitle">Découvrez pourquoi nos clients nous font confiance pour leur communication digitale</p>
+        </div>
+        
+        <div class="review-content-wrapper">
+            <!-- Sidebar avec évaluation - Version compacte -->
+            <div class="rating-sidebar">
+                <div class="rating-summary">
+                    <a href="https://www.google.com/maps/place/?q=place_id:ChIJx7LVNmp16UcRjVOs7n3i1rs" 
+                       class="google-link" 
+                       target="_blank" 
+                       rel="noopener noreferrer">
+                        <img src="https://serveur-images.devil-it-applications.fr/evapi/svg/google_logo.svg" 
+                             alt="Google Logo" 
+                             class="google-logo"
+                             loading="lazy">
+                        <span class="rating-score">5.0</span>
+                        <div class="stars-container">
+                            ★★★★★
+                        </div>
+                        <span class="review-count">20 avis clients</span>
+                    </a>
+                    <a class="btn-review" 
+                       href="https://search.google.com/local/writereview?placeid=ChIJx7LVNmp16UcRjVOs7n3i1rs" 
+                       target="_blank" 
+                       rel="noopener noreferrer">
+                        <i class="fas fa-pencil-alt"></i>
+                        Écrire un avis
+                    </a>
+                </div>
+                
+                <div class="rating-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Excellence</span>
+                        <span class="stat-value">100%</span>
+                        <div class="stat-bar">
+                            <div class="stat-fill" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Professionnalisme</span>
+                        <span class="stat-value">95%</span>
+                        <div class="stat-bar">
+                            <div class="stat-fill" style="width: 95%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Réactivité</span>
+                        <span class="stat-value">98%</span>
+                        <div class="stat-bar">
+                            <div class="stat-fill" style="width: 98%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Satisfaction</span>
+                        <span class="stat-value">99%</span>
+                        <div class="stat-bar">
+                            <div class="stat-fill" style="width: 99%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Carousel d'avis - Partie principale -->
+            <div class="carousel-main">
+                <div class="review-carousel">
+                    <!-- Slider main container -->
+                    <div class="swiper">
+                        <!-- Additional required wrapper -->
+                        <div class="swiper-wrapper">
+                            <!-- Slides -->
+                            <div class="swiper-slide">
+                                <div class="review-item" style="animation-delay: 0.1s">
+                                    <div class="review-item-header">
+                                        <h3 class="reviewer-name">PRO RÉNOV</h3>
+                                        <div class="item-stars">★★★★★</div>
+                                    </div>
+                                    <img src="https://serveur-images.devil-it-applications.fr/evapi/svg/google_logo.svg" 
+                                         alt="Google Logo" 
+                                         class="review-logo"
+                                         loading="lazy">
+                                    <div class="review-content">
+                                        <p class="review-text">Merci à Johan et à toute son équipe pour leur excellent travail. J'apprécie leur professionnalisme et leur engagement. Je recommande. Merci encore !</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="swiper-slide">
+                                <div class="review-item" style="animation-delay: 0.2s">
+                                    <div class="review-item-header">
+                                        <h3 class="reviewer-name">François Duparc</h3>
+                                        <div class="item-stars">★★★★★</div>
+                                    </div>
+                                    <img src="https://serveur-images.devil-it-applications.fr/evapi/svg/google_logo.svg" 
+                                         alt="Google Logo" 
+                                         class="review-logo"
+                                         loading="lazy">
+                                    <div class="review-content">
+                                        <p class="review-text">Super suivi client, répond aux attentes précises des dirigeants pour leurs sites internet. Je recommande vivement Evapi !</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="swiper-slide">
+                                <div class="review-item" style="animation-delay: 0.3s">
+                                    <div class="review-item-header">
+                                        <h3 class="reviewer-name">Vincent Debailleux</h3>
+                                        <div class="item-stars">★★★★★</div>
+                                    </div>
+                                    <img src="https://serveur-images.devil-it-applications.fr/evapi/svg/google_logo.svg" 
+                                         alt="Google Logo" 
+                                         class="review-logo"
+                                         loading="lazy">
+                                    <div class="review-content">
+                                        <p class="review-text">Très professionnel et d'excellents conseils. Nous recommandons vivement cette société qui est toujours disponible dans les meilleurs délais. Merci à vous.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="swiper-slide">
+                                <div class="review-item" style="animation-delay: 0.4s">
+                                    <div class="review-item-header">
+                                        <h3 class="reviewer-name">Damien Kindermans</h3>
+                                        <div class="item-stars">★★★★★</div>
+                                    </div>
+                                    <img src="https://serveur-images.devil-it-applications.fr/evapi/svg/google_logo.svg" 
+                                         alt="Google Logo" 
+                                         class="review-logo"
+                                         loading="lazy">
+                                    <div class="review-content">
+                                        <p class="review-text">Efficace, réactif avec un bon suivi et des conseils avisés.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="swiper-slide">
+                                <div class="review-item" style="animation-delay: 0.5s">
+                                    <div class="review-item-header">
+                                        <h3 class="reviewer-name">Marie Boudinot</h3>
+                                        <div class="item-stars">★★★★★</div>
+                                    </div>
+                                    <img src="https://serveur-images.devil-it-applications.fr/evapi/svg/google_logo.svg" 
+                                         alt="Google Logo" 
+                                         class="review-logo"
+                                         loading="lazy">
+                                    <div class="review-content">
+                                        <p class="review-text">Site internet qui correspond à mes attentes, les visites ont considérablement augmentées grâce au référencement qui est bien meilleur qu'avant. Olfa a géré le dossier du début à la fin, on sent qu'on est suivi. Johan a respecté ses engagements en terme de résultats, les demandes sont quotidiennes. En bref, c'est top :)</p>
+                                        <span class="read-more">Lire plus</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="swiper-slide">
+                                <div class="review-item" style="animation-delay: 0.6s">
+                                    <div class="review-item-header">
+                                        <h3 class="reviewer-name">Bulle D'extérieur</h3>
+                                        <div class="item-stars">★★★★★</div>
+                                    </div>
+                                    <img src="https://serveur-images.devil-it-applications.fr/evapi/svg/google_logo.svg" 
+                                         alt="Google Logo" 
+                                         class="review-logo"
+                                         loading="lazy">
+                                    <div class="review-content">
+                                        <p class="review-text">À conseiller !!!!! Super accompagnement, infrastructure et process innovants. Johan et son équipe ont très bien ciblé nos attentes. Equipe sympathique, très réactive et à l'écoute. Projet mis en place rapidement, et retour plus que positif ! Facile d'utilisation, et compréhension technique simplifiée ;) Augmentation significative de notre prospection… Merci infiniment pour votre soutient qui nous aide à booster notre activité !!!</p>
+                                        <span class="read-more">Lire plus</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="swiper-slide">
+                                <div class="review-item" style="animation-delay: 0.7s">
+                                    <div class="review-item-header">
+                                        <h3 class="reviewer-name">Cyril Jousset</h3>
+                                        <div class="item-stars">★★★★★</div>
+                                    </div>
+                                    <img src="https://serveur-images.devil-it-applications.fr/evapi/svg/google_logo.svg" 
+                                         alt="Google Logo" 
+                                         class="review-logo"
+                                         loading="lazy">
+                                    <div class="review-content">
+                                        <p class="review-text">Je remercie vivement toute l'équipe pour le sérieux quant aux résultats positifs des divers projets mené. Normalement je ne renseigne jamais d'avis mais je dois pour une fois m'incliner, et dire Bravo. Bravo pour l'efficacité des outils, la rapidité, le suivi, la compréhension du sujet et l'apport des solutions.</p>
+                                        <span class="read-more">Lire plus</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Navigation buttons -->
+                    <div class="carousel-nav">
+                        <button class="nav-btn swiper-button-prev" aria-label="Avis précédent">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="nav-btn swiper-button-next" aria-label="Avis suivant">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://unpkg.com/swiper@9/swiper-bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Swiper
+            const swiper = new Swiper('.swiper', {
+                slidesPerView: 1,
+                spaceBetween: 20,
+                centeredSlides: false,
+                loop: true,
+                autoplay: {
+                    delay: 6000,
+                    disableOnInteraction: false,
+                    pauseOnMouseEnter: true,
+                },
+                speed: 800,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                    dynamicBullets: true,
+                },
+                breakpoints: {
+                    640: {
+                        slidesPerView: 1,
+                        spaceBetween: 20,
+                    },
+                    768: {
+                        slidesPerView: 2,
+                        spaceBetween: 25,
+                    },
+                    1024: {
+                        slidesPerView: 2,
+                        spaceBetween: 30,
+                    },
+                    1200: {
+                        slidesPerView: 3,
+                        spaceBetween: 35,
+                    },
+                }
+            });
+            
+            // Read more functionality for long reviews
+            document.querySelectorAll('.read-more').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const reviewText = btn.previousElementSibling;
+                    const isExpanded = reviewText.classList.contains('expanded');
+                    
+                    reviewText.classList.toggle('expanded');
+                    btn.textContent = isExpanded ? 'Lire plus' : 'Lire moins';
+                    
+                    // Update Swiper layout
+                    setTimeout(() => {
+                        swiper.update();
+                    }, 300);
+                });
+            });
+            
+            // Add intersection observer for animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animationPlayState = 'running';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe review items
+            document.querySelectorAll('.review-item').forEach(item => {
+                observer.observe(item);
+            });
+            
+            // Pause autoplay when interacting with read more buttons
+            document.querySelectorAll('.read-more').forEach(btn => {
+                btn.addEventListener('mouseenter', () => {
+                    swiper.autoplay.stop();
+                });
+                
+                btn.addEventListener('mouseleave', () => {
+                    swiper.autoplay.start();
+                });
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,161 @@
+<nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container-fluid">
+        {# Logo + Brand #}
+        <a class="navbar-brand d-flex align-items-center" href="{{ path('app_home') }}">
+            <img src="{{ asset('assets/images/logo-evapi.svg') }}" 
+                 alt="Evapi Solutions" 
+                 height="30" 
+                 class="me-2">
+        </a>
+
+        {# Mobile Toggle #}
+        <button class="navbar-toggler" 
+                type="button" 
+                data-bs-toggle="collapse" 
+                data-bs-target="#navbarContent"
+                aria-controls="navbarContent" 
+                aria-expanded="false" 
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        {# Navbar Content #}
+        <div class="collapse navbar-collapse" id="navbarContent">
+            {# Main Menu #}
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {# Home #}
+                <li class="nav-item">
+                    <a class="nav-link {{ app.request.get('_route') == 'app_home' ? 'active' : '' }}" 
+                       href="{{ path('app_home') }}"
+                       aria-current="{{ app.request.get('_route') == 'app_home' ? 'page' : 'false' }}">
+                        <i class="fas fa-home me-1"></i> Accueil
+                    </a>
+                </li>
+
+                {# Projects Menu - Only show if user is logged in #}
+                {% if app.user %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {{ app.request.get('_route') starts with 'admin_project' or app.request.get('_route') starts with 'user_project' ? 'active' : '' }}" 
+                           href="#" 
+                           id="projectsDropdown"
+                           role="button" 
+                           data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            <i class="fas fa-project-diagram me-1"></i> Projets
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="projectsDropdown">
+                            {# Different links based on user role #}
+                            {% if 'ROLE_ADMIN' in app.user.roles[0] %}
+                                <li>
+                                    <a class="dropdown-item {{ app.request.get('_route') == 'admin_projects' ? 'active' : '' }}" 
+                                       href="{{ path('admin_projects') }}">
+                                        <i class="fas fa-list me-1"></i> Tous les projets
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item {{ app.request.get('_route') == 'admin_project_new' ? 'active' : '' }}" 
+                                       href="{{ path('admin_project_new') }}">
+                                        <i class="fas fa-plus-circle me-1"></i> Nouveau projet
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li>
+                                    <a class="dropdown-item {{ app.request.get('_route') == 'user_projects' ? 'active' : '' }}" 
+                                       href="{{ path('user_projects') }}">
+                                        <i class="fas fa-list me-1"></i> Mes projets
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item {{ app.request.get('_route') == 'user1_project_new' ? 'active' : '' }}" 
+                                       href="{{ path('user1_project_new') }}">
+                                        <i class="fas fa-plus-circle me-1"></i> Nouveau projet
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </li>
+
+                    {# Messages - Only show if user has access #}
+   {#                 {% if 'ROLE_ADMIN' in app.user.roles or 'user_messages' in app.request.attributes.get('_route_params', [])|keys %}
+                        <li class="nav-item">
+                            <a class="nav-link {{ app.request.get('_route') == 'user_messages' ? 'active' : '' }}" 
+                               href="{{ path('user_messages') }}">
+                                <i class="fas fa-envelope me-1"></i> Messages
+                                <span class="badge bg-danger rounded-pill ms-1">3</span>
+                            </a>
+                        </li>
+                    {% endif %}   #}
+                {% endif %}
+            </ul>
+
+            {# User Area #}
+            {% if app.user %}
+                <ul class="navbar-nav ms-auto">
+                    {# Notifications - Only show if user has access #}
+    {#                {% if 'ROLE_ADMIN' in app.user.roles or 'user_notifications' in app.request.attributes.get('_route_params', [])|keys %}
+                        <li class="nav-item d-flex align-items-center me-3">
+                            <a class="nav-link position-relative" href="{{ path('user_notifications') }}">
+                                <i class="fas fa-bell"></i>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    2
+                                </span>
+                            </a>
+                        </li>
+                    {% endif %}   #}
+
+                    {# User Dropdown #}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" 
+                           href="#" 
+                           id="userDropdown"
+                           role="button" 
+                           data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            <div class="me-2 d-none d-sm-block">
+                                {{ app.user.firstName }} {{ app.user.lastName|first }}.
+                            </div>
+                            <i class="fas fa-user-circle fs-5"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li>
+                                <h6 class="dropdown-header">
+                                    Connecté en tant que<br>
+                                    <strong>{{ app.user.email }}</strong>
+                                </h6>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item {{ app.request.get('_route') == 'user_profile' ? 'active' : '' }}" 
+                                   href="{{ path('app_user_profile', {id: app.user.id}) }}">
+                                    <i class="fas fa-user me-2"></i> Mon profil
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item {{ app.request.get('_route') == 'user_settings' ? 'active' : '' }}" 
+                                   href="{{ path('app_user_settings') }}">
+                                    <i class="fas fa-cog me-2"></i> Paramètres
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="{{ path('app_logout') }}">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Déconnexion
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            {% else %}
+                {# Guest User #}
+                <div class="d-flex ms-auto">
+                    <a href="{{ path('app_login') }}" class="btn btn-outline-primary me-2">
+                        <i class="fas fa-sign-in-alt me-1"></i> Connexion
+                    </a>
+                    <a href="{{ path('app_register') }}" class="btn btn-primary text-white">
+                        <i class="fas fa-user-plus me-1"></i> Inscription
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,187 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Projet {{ project.name }}{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    {# En-tête du projet #}
+    <header class="project-header mb-5">
+        <div class="d-flex align-items-center mb-3">
+            <i class="bi bi-folder me-3 fs-1 text-primary"></i>
+            <div>
+                <h1 class="project-title mb-0">{{ project.name }}</h1>
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-person-circle me-2 text-muted"></i>
+                    <span class="project-author text-muted">
+                        {{ project.user.firstName }} {{ project.user.lastName }}
+                    </span>
+                    <span class="mx-2 text-muted">•</span>
+                    <i class="bi bi-calendar me-2 text-muted"></i>
+               {#     <span class="text-muted">{{ project.createdAt|date('d/m/Y') }}</span> #}
+                </div>
+            </div>
+        </div>
+        
+        {% if is_granted('EDIT', project) or 'ROLE_ADMIN' in app.user.roles %}
+        <div class="project-actions">
+            <a href="{{ path('client_project_edit', {id: project.id}) }}" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-pencil-square me-1"></i> Modifier
+            </a>
+        </div>
+        {% endif %}
+    </header>
+
+    {# Détails du projet #}
+    <section class="mb-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h2 class="h5 mb-0">
+                    <i class="bi bi-card-checklist me-2 text-primary"></i>Détails du projet
+                </h2>
+{% if 'ROLE_ADMIN' in app.user.roles %}
+<div class="dropdown">
+    <button class="btn btn-sm btn-{{ project.statusClass }} dropdown-toggle" type="button" id="statusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        {{ project.statusLabel }}
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="statusDropdown">
+        <li>
+            <a class="dropdown-item" href="{{ path('project_update_status', {id: project.id, status: 'active'}) }}">
+                <span class="badge bg-primary me-2"></span> En cours
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="{{ path('project_update_status', {id: project.id, status: 'completed'}) }}">
+                <span class="badge bg-success me-2"></span> Terminé
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="{{ path('project_update_status', {id: project.id, status: 'archived'}) }}">
+                <span class="badge bg-secondary me-2"></span> Archivé
+            </a>
+        </li>
+    </ul>
+</div>
+{% else %}
+<span class="badge bg-{{ project.statusClass }}">{{ project.statusLabel }}</span>
+{% endif %}
+            </div>
+            <div class="card-body">
+                {% if project.projectValues is empty %}
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Aucun détail n'a été renseigné pour ce projet.
+                    </div>
+                {% else %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <tbody>
+                                {% for value in project.projectValues %}
+                                    <tr>
+                                        <th scope="row" class="w-40 font-weight-bold text-primary">
+                                            <i class="bi bi-tag-fill me-2"></i>
+                                            {{ value.projectAttribute }}
+                                        </th>
+                                        <td class="w-60">{{ value.value }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    {# Section feedback - accessible seulement aux ROLE_USER #}
+    {% if 'ROLE_USER' in app.user.roles %}
+    <section class="mb-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <h2 class="h5 mb-0">
+                    <i class="bi bi-chat-square-text me-2 text-primary"></i>Votre avis compte !
+                </h2>
+            </div>
+            <div class="card-body">
+                {% if app.user %}
+                    <div class="alert alert-info d-flex align-items-center">
+                        <i class="bi bi-info-circle-fill me-2 flex-shrink-0"></i>
+                        <div>
+                            Partagez votre expérience avec ce projet. Votre feedback nous aide à nous améliorer.
+                            {% if project.feedback %}
+                                <div class="mt-2">
+                                    <strong>Votre avis :</strong> "{{ project.feedback }}"
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {{ form_start(feedbackForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                        <div class="mb-3">
+                            {{ form_widget(feedbackForm.comment, {
+                                'attr': {
+                                    'class': 'form-control',
+                                    'rows': 4,
+                                    'placeholder': "Ex: 'Super suivi client ! Communication efficace et résultats au-delà de nos attentes.'"
+                                }
+                            }) }}
+                            {{ form_errors(feedbackForm.comment) }}
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send-fill me-2"></i>{{ project.feedback ? 'Mettre à jour' : 'Envoyer' }} votre avis
+                        </button>
+                    {{ form_end(feedbackForm) }}
+                {% else %}
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        Vous devez être <a href="{{ path('app_login') }}" class="alert-link">connecté</a> pour laisser un avis.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .project-title {
+        color: var(--bs-primary);
+        font-weight: 600;
+    }
+    
+    .project-header {
+        position: relative;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--bs-border-color);
+    }
+    
+    .project-actions {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+    
+    .table {
+        --bs-table-bg: transparent;
+        border-collapse: separate;
+        border-spacing: 0 0.75rem;
+    }
+    
+    .table tbody tr {
+        background-color: var(--bs-light-bg-subtle);
+        transition: all 0.2s ease;
+    }
+    
+    .table tbody tr:hover {
+        background-color: var(--bs-primary-bg-subtle);
+        transform: translateY(-2px);
+    }
+    
+    .table th, .table td {
+        vertical-align: middle;
+        padding: 1rem;
+        border: none;
+    }
+</style>
+{% endblock %}

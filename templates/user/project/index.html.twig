@@ -1,0 +1,116 @@
+{# templates/user/project/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Projets{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Liste des Projets</h1>
+    
+    {# Sélecteur d'éléments par page #}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <form method="get" class="form-inline">
+                <label for="itemsPerPage" class="me-2">Éléments par page:</label>
+                <select name="itemsPerPage" id="itemsPerPage" class="form-select form-select-sm" onchange="this.form.submit()" style="width: auto;">
+                    <option value="5" {{ itemsPerPage == 5 ? 'selected' : '' }}>5</option>
+                    <option value="10" {{ itemsPerPage == 10 ? 'selected' : '' }}>10</option>
+                    <option value="20" {{ itemsPerPage == 20 ? 'selected' : '' }}>20</option>
+                    <option value="50" {{ itemsPerPage == 50 ? 'selected' : '' }}>50</option>
+                </select>
+                {# Conserver les autres paramètres de requête #}
+                <input type="hidden" name="page" value="{{ pagination.currentPageNumber }}">
+            </form>
+        </div>
+        
+        <a href="{{ path('user1_project_new') }}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Nouveau projet
+        </a>
+    </div>
+    
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Client</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for project in pagination %}
+            <tr>
+                <td>{{ project.name }}</td>
+                <td>{{ project.user.username }}</td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <a href="{{ path('user_project_show', {id: project.id}) }}" class="btn btn-primary">Voir</a>
+                        <a href="{{ path('user_project_edit', {id: project.id}) }}" class="btn btn-secondary">Edit</a>
+                    </div>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3" class="text-center">Aucun projet trouvé</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    
+    {# Navigation de pagination #}
+    {% if pagination.getTotalItemCount() > 0 %}
+    <nav aria-label="Navigation des projets">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <span class="text-muted">
+                    Affichage de {{ pagination.getItemNumberPerPage() > pagination.getTotalItemCount() ? pagination.getTotalItemCount() : pagination.getItemNumberPerPage() }} 
+                    sur {{ pagination.getTotalItemCount() }} projet(s)
+                </span>
+            </div>
+            
+            <ul class="pagination">
+                {# Premier #}
+                <li class="page-item {{ pagination.currentPageNumber == 1 ? 'disabled' : '' }}">
+                    <a class="page-link" href="{{ path('user_projects', {page: 1, itemsPerPage: itemsPerPage}) }}">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                </li>
+                
+                {# Précédent #}
+                <li class="page-item {{ pagination.currentPageNumber == 1 ? 'disabled' : '' }}">
+                    <a class="page-link" href="{{ path('user_projects', {page: pagination.currentPageNumber - 1, itemsPerPage: itemsPerPage}) }}">
+                        <i class="fas fa-angle-left"></i>
+                    </a>
+                </li>
+                
+                {# Pages #}
+                {% for page in 1..pagination.pageCount %}
+                    <li class="page-item {{ page == pagination.currentPageNumber ? 'active' : '' }}">
+                        <a class="page-link" href="{{ path('user_projects', {page: page, itemsPerPage: itemsPerPage}) }}">{{ page }}</a>
+                    </li>
+                {% endfor %}
+                
+                {# Suivant #}
+                <li class="page-item {{ pagination.currentPageNumber == pagination.pageCount ? 'disabled' : '' }}">
+                    <a class="page-link" href="{{ path('user_projects', {page: pagination.currentPageNumber + 1, itemsPerPage: itemsPerPage}) }}">
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                </li>
+                
+                {# Dernier #}
+                <li class="page-item {{ pagination.currentPageNumber == pagination.pageCount ? 'disabled' : '' }}">
+                    <a class="page-link" href="{{ path('user_projects', {page: pagination.pageCount, itemsPerPage: itemsPerPage}) }}">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    {% endif %}
+</div>
+
+<style>
+.pagination {
+    margin-bottom: 0;
+}
+</style>
+{% endblock %}

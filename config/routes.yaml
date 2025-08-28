@@ -1,0 +1,26 @@
+# config/routes.yaml
+
+# Routes principales
+app_home:
+    path: /
+    controller: App\Controller\HomeController::home
+    methods: GET
+
+# Administration
+admin_dashboard:
+    path: /admin
+    controller: App\Controller\Admin\DashboardController::index
+    methods: GET
+
+# Login
+app_login:
+    path: /login
+    controller: App\Controller\LoginController::index
+    methods: [GET]
+
+# Chargement automatique des autres contrôleurs
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute

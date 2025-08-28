@@ -1,0 +1,150 @@
+{# templates/project/edit.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier {{ project.name }}{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .form-container {
+        max-width: 800px;
+        margin: 2rem auto;
+    }
+    .card-header {
+        background: linear-gradient(to right, #4a6cf7, #6a11cb);
+        color: white;
+    }
+    .value-row {
+        background-color: #f8f9fa;
+        border-left: 4px solid #4a6cf7;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        border-radius: 4px;
+    }
+    .btn-add {
+        margin-top: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container form-container">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="mb-0">Modifier le projet</h2>
+          {#  <p class="mb-0 text-light">{{ project.name }} ({{ project.user.firstName }})</p> #}
+          <p class="mb-0 text-light">
+    {{ project.name }} 
+    {% if project.user %}
+        ({{ project.user.firstName }} {{ project.user.lastName }} - {{ project.user.email }})
+    {% endif %}
+</p>
+        </div>
+        
+        <div class="card-body">
+            {{ form_start(form) }}
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    {{ form_row(form.name, {
+                        'label': 'Nom du projet',
+                        'attr': {'class': 'form-control'}
+                    }) }}
+                </div>
+                <div class="col-md-6">
+                    {{ form_row(form.user, {
+                        'label': 'User',
+                        'attr': {'class': 'form-control'}
+                    }) }}
+                </div>
+            </div>
+
+            <h4 class="mb-3">Caractéristiques</h4>
+            
+            <div id="values-container" 
+                 data-prototype="{{ form_widget(form.projectValues.vars.prototype)|e('html_attr') }}"
+                 class="mb-3">
+                 
+                {% for value in form.projectValues %}
+                <div class="value-row row">
+                    <div class="col-md-5">
+                        {{ form_row(value.projectAttribute, {
+                            'label': 'Attribut',
+                            'attr': {'class': 'form-control'}
+                        }) }}
+                    </div>
+                    <div class="col-md-5">
+                        {{ form_row(value.value, {
+                            'label': 'Valeur',
+                            'attr': {'class': 'form-control'}
+                        }) }}
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="button" class="btn btn-danger remove-value">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <button type="button" id="add-value" class="btn btn-secondary btn-add">
+                <i class="fas fa-plus"></i> Ajouter une caractéristique
+            </button>
+            
+            <div class="mt-4 d-flex justify-content-end">
+                <a href="{{ path('app_home') }}" class="btn btn-outline-secondary mr-2">
+                    <i class="fas fa-arrow-left"></i> Annuler
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Enregistrer
+                </button>
+            </div>
+            
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addButton = document.getElementById('add-value');
+    const container = document.getElementById('values-container');
+    let index = container.children.length;
+
+    addButton.addEventListener('click', function() {
+        const prototype = container.dataset.prototype;
+        const newForm = prototype.replace(/__name__/g, index);
+        const div = document.createElement('div');
+        div.classList.add('value-row', 'row');
+        div.innerHTML = `
+            <div class="col-md-5">
+                ${newForm.replace(/<select/g, '<select class="form-control"')}
+            </div>
+            <div class="col-md-5">
+                <input type="text" class="form-control" />
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="button" class="btn btn-danger remove-value">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        
+        container.appendChild(div);
+        index++;
+        
+        div.querySelector('.remove-value').addEventListener('click', function() {
+            div.remove();
+        });
+    });
+
+    document.querySelectorAll('.remove-value').forEach(button => {
+        button.addEventListener('click', function() {
+            this.closest('.value-row').remove();
+        });
+    });
+});
+</script>
+{% endblock %}

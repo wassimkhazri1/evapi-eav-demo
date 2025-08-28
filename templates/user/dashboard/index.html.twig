@@ -1,0 +1,149 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de bord - Evapi Solutions{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-tachometer-alt me-2"></i>Tableau de bord
+        </h1>
+        <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dashboardFilter" data-bs-toggle="dropdown">
+                Derniers 30 jours
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">7 derniers jours</a></li>
+                <li><a class="dropdown-item" href="#">30 derniers jours</a></li>
+                <li><a class="dropdown-item" href="#">3 derniers mois</a></li>
+            </ul>
+        </div>
+    </div>
+
+    {# Stats Cards #}
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card border-start border-primary border-4 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="text-muted">Projets actifs</h6>
+                            <h3 class="mb-0">5</h3>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 p-3 rounded">
+                            <i class="fas fa-project-diagram text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card border-start border-success border-4 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="text-muted">Tâches en cours</h6>
+                            <h3 class="mb-0">12</h3>
+                        </div>
+                        <div class="bg-success bg-opacity-10 p-3 rounded">
+                            <i class="fas fa-tasks text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card border-start border-info border-4 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="text-muted">Messages non lus</h6>
+                            <h3 class="mb-0">3</h3>
+                        </div>
+                        <div class="bg-info bg-opacity-10 p-3 rounded">
+                            <i class="fas fa-envelope text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Recent Projects #}
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">
+                <i class="fas fa-project-diagram me-2"></i>Mes projets récents
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Nom du projet</th>
+                            <th>Statut</th>
+                            <th>Dernière activité</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Site web Evapi</td>
+                            <td><span class="badge bg-success">En cours</span></td>
+                            <td>Il y a 2 jours</td>
+                            <td>
+                                <a href="#" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Application mobile</td>
+                            <td><span class="badge bg-warning">En attente</span></td>
+                            <td>Il y a 1 semaine</td>
+                            <td>
+                                <a href="#" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-center mt-3">
+                <a href="{{ path('user_projects') }}" class="btn btn-primary">
+                    <i class="fas fa-list me-1"></i> Voir tous mes projets
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {# Recent Activity #}
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">
+                <i class="fas fa-bell me-2"></i>Activité récente
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="list-group">
+                <a href="#" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">Nouveau message</h6>
+                        <small>Il y a 1 heure</small>
+                    </div>
+                    <p class="mb-1">Vous avez reçu un nouveau message sur le projet "Site web Evapi"</p>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">Tâche complétée</h6>
+                        <small>Hier</small>
+                    </div>
+                    <p class="mb-1">La tâche "Design homepage" a été marquée comme complétée</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
