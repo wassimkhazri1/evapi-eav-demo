@@ -31,7 +31,7 @@ Cette application web permet de gérer des projets avec un système flexible d'a
 
 ## 🛠️ Stack Technique
 
-- **Framework Backend** : Symfony 6.4 / 7.0
+- **Framework Backend** : Symfony 7.3
 - **Langage** : PHP 8.2+
 - **Base de données** : MySQL / MariaDB
 - **ORM** : Doctrine
